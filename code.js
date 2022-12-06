@@ -227,7 +227,6 @@ async function nextName()
 
 async function start()
 {
-    console.log(1)
     showLoader();
     document.querySelector('.start-container').classList.add('hidden');
     document.querySelector('.main-container').classList.remove('hidden');
