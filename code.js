@@ -106,20 +106,28 @@ async function showResult(profession)
     var snapshot = await get(qRef);
     var data = snapshot.val();
     data['count']++;
-// count++
     data[profession]['clicked']++;
+    var clicked = [];
+    var sum = 0;
     for (var i = 0; i < 4; i++)
     {
         const curr = document.getElementById((i+1).toString()).innerHTML;
         data[curr]['saw']++;
+
+        clicked.push(data[curr]['clicked']);
+        sum += data[curr]['clicked'];
+    }
+    for (var i = 0; i < 4; i++)
+    {
+        document.getElementById((i+1).toString()).innerHTML += ' (' + (100 * clicked[i] / sum) + '%)';
     }
     
     set(qRef, data);
     qRef = ref(getDatabase(), gender + '/count');
     snapshot = await get(qRef);
     data = snapshot.val();
+    hideLoader();
     set(qRef, data+1);
-    nextName();
 }
 
 // if there's no enough data, i want to give the professions with
@@ -239,3 +247,4 @@ async function start(gender1)
 
 window.start = start;
 window.showResult = showResult;
+window.nextName = nextName;
