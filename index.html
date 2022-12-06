@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>סטיב ז'ובס</title>
+
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta property="og:image" itemprop="image" content="https://raw.githubusercontent.com/shvushon/stevejobs/main/stevejobs.jpg">
+    <!-- TODO: stevejobs.jpg, favicon.jpg -->
+    <link rel="stylesheet" href="style.css">
+    <link href='https://fonts.googleapis.com/css?family=Heebo' rel='stylesheet'>
+    <link rel="icon" type="image/x-icon" href="https://raw.githubusercontent.com/shvushon/stevejobs/main/favicon.jpg">
+</head>
+<body>
+    <header class="sub-header">
+        <h1>סטיב ז'ובס</h1>
+    </header>
+    <div class="start-container">
+        <p>ברוכים הבאים וכן הלאה.</p>
+        <button onclick="start('boys')">בנים</button>
+        <button onclick="start('girls')">בנות</button>
+    </div>
+    <div class="main-container hidden">
+        <h2 id="name"></h2>
+        <button id="1" onclick="showResult(this.id)"></button>
+        <button id="2" onclick="showResult(this.id)"></button>
+        <button id="3" onclick="showResult(this.id)"></button>
+        <button id="4" onclick="showResult(this.id)"></button>
+    </div>
+    
+<div class="loader-container">
+    <div class="loader-circle" hidden></div>
+    <div class="loader-line" hidden>
+        <div class="loader-clock" hidden></div>
+    </div>
+    <div class="loader-text" hidden>רק רגע...<div>
+</div>
+<div class="dark-screen" hidden></div>
+  
+    <script type="module" src="code.js"></script>
+</body>
+</html>
