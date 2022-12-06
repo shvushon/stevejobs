@@ -41,7 +41,7 @@ button:active {
   z-index: 1000;
 }
 
-.start-container, .main-container {
+.container {
   display: flex;
   flex-direction: column;
   justify-content: center;

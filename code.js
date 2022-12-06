@@ -122,6 +122,22 @@ async function showResult(profession)
     hideLoader();
 }
 
+function get4Random()
+{
+    var res = [];
+    var keys = Object.keys(data);
+    var arr = [];
+    while(arr.length < 4) {
+        var r = Math.floor(Math.random() * (keys.length-2));
+        if (arr.indexOf(r) === -1) arr.push(r);
+    }
+    for (var i = 0; i < 4; i++)
+    {
+        res.push(keys[arr[i] + 2]);
+    }
+    return res;
+}
+
 // if there's no enough data, i want to give the professions with
 // the lowest saw values.
 function get4MinSaw()
@@ -186,6 +202,12 @@ function getTop4()
     return Object.keys(res);
 }
 
+function endGame()
+{
+    document.querySelector('.game').classList.add('hidden');
+    document.querySelector('.end').classList.remove('hidden');
+}
+
 async function nextName()
 {
     const index_of_index = Math.floor(Math.random() * indexes.length);
@@ -200,8 +222,7 @@ async function nextName()
         const data = snapshot.val();
         if (!data)
         {
-            return;
-            // finish game, the names has done
+            endGame();
         }
         indexes = Array.from({length: 10}, (_, i) => (count*10 + i));
     }
@@ -209,15 +230,22 @@ async function nextName()
     data = snapshot.val();
     document.getElementById('name').innerHTML = 'מה ' + data['name'] + ' יותר:';
     var small = false;
+    var big = false;
     for (let i in data)
     {
-        if (data[i]['saw'] < 5) {
+        if (data[i]['saw'] > 5)
+            big = true;
+        if (data[i]['saw'] < 5)
             small = true;
-            break;
-        }
     }
     // if the db is small for this profession
-    var res = small ? get4MinSaw(data) : getTop4(data);
+    var res;
+    if (!big)
+        res = get4Random();
+    else if (big && small)
+        res = get4MinSaw();
+    else
+        res = getTop4();
     for (let i = 0; i < 4; i++)
     {
         document.getElementById((i+1).toString()).innerText = res[i];
@@ -228,8 +256,8 @@ async function nextName()
 async function start()
 {
     showLoader();
-    document.querySelector('.start-container').classList.add('hidden');
-    document.querySelector('.main-container').classList.remove('hidden');
+    document.querySelector('.start').classList.add('hidden');
+    document.querySelector('.main').classList.remove('hidden');
     
     indexes = [...Array(Math.floor(10)).keys()];
     
