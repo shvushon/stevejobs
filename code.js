@@ -23,14 +23,11 @@ const app = initializeApp(firebaseConfig);
 getAnalytics(app);
 
 var gender;
-var count = 0;
+var indexes;
 var data;
+var count = 0;
+var index;
 
-const loaderCircle = document.querySelector(".loader-circle");
-const loaderLine = document.querySelector(".loader-line");
-const loaderClock = document.querySelector(".loader-clock");
-const loaderText = document.querySelector(".loader-text");
-const darkScreen = document.querySelector(".dark-screen");
 // fill_db();
 
 // use only at first
@@ -86,25 +83,42 @@ function fill_db()
 }
 
 function showLoader() {
-    loaderCircle.hidden = false;
-    loaderLine.hidden = false;
-    loaderClock.hidden = false;
-    loaderText.hidden = false;
-    darkScreen.hidden = false;
+    document.querySelector(".loader-circle").hidden = false;
+    document.querySelector(".loader-line").hidden = false;
+    document.querySelector(".loader-clock").hidden = false;
+    document.querySelector(".loader-text").hidden = false;
+    document.querySelector(".dark-screen").hidden = false;
 }
 
 function hideLoader() {
-    loaderCircle.hidden = true;
-    loaderLine.hidden = true;
-    loaderClock.hidden = true;
-    loaderText.hidden = true;
-    darkScreen.hidden = true;
+    document.querySelector(".loader-circle").hidden = true;
+    document.querySelector(".loader-line").hidden = true;
+    document.querySelector(".loader-clock").hidden = true;
+    document.querySelector(".loader-text").hidden = true;
+    document.querySelector(".dark-screen").hidden = true;
 }
 
-function showResult(id)
+async function showResult(profession)
 {
-    console.log(id);
-    //
+    showLoader();
+
+    var qRef = ref(getDatabase(), `${gender}/${index}`);
+    var snapshot = await get(qRef);
+    var data = snapshot.val();
+    data['count']++;
+// count++
+    data[profession]['clicked']++;
+    for (var i = 0; i < 4; i++)
+    {
+        const curr = document.getElementById((i+1).toString()).innerHTML;
+        data[curr]['saw']++;
+    }
+    
+    set(qRef, data);
+    qRef = ref(getDatabase(), gender + '/count');
+    snapshot = await get(qRef);
+    data = snapshot.val();
+    set(qRef, data+1);
     nextName();
 }
 
@@ -174,8 +188,23 @@ function getTop4()
 
 async function nextName()
 {
-    showLoader();
-    const qRef = ref(getDatabase(), gender + '/' + count);
+    const index_of_index = Math.floor(Math.random() * indexes.length);
+    index = indexes[index_of_index];
+    const qRef = ref(getDatabase(), gender + '/' + index);
+    indexes.splice(index_of_index, 1);
+    if (!indexes.length)
+    {
+        count++;
+        const qRef = ref(getDatabase(), gender + '/' + (count+1) * 10);
+        const snapshot = await get(qRef);
+        const data = snapshot.val();
+        if (!data)
+        {
+            return;
+            // finish game, the names has done
+        }
+        indexes = Array.from({length: 10}, (_, i) => (count*10 + i));
+    }
     var snapshot = await get(qRef);
     data = snapshot.val();
     document.getElementById('name').innerHTML = 'מה ' + data['name'] + ' יותר:';
@@ -196,16 +225,17 @@ async function nextName()
     hideLoader();
 }
 
-
-function start(gender1)
+async function start(gender1)
 {
+    showLoader();
     gender = gender1;
     document.querySelector('.start-container').classList.add('hidden');
     document.querySelector('.main-container').classList.remove('hidden');
+    
+    indexes = [...Array(Math.floor(10)).keys()];
+    
     nextName();
 }
-
-
 
 window.start = start;
 window.showResult = showResult;
