@@ -22,7 +22,6 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 getAnalytics(app);
 
-var gender;
 var indexes;
 var data;
 var count = 0;
@@ -46,7 +45,6 @@ function fill_db()
     .sort((a, b) => a.sort - b.sort)
     .map(({ value }) => value);
    
-    var res = {};
     var data = {};
     var count = 0;
     boys_shuffled.forEach(i => {
@@ -57,14 +55,9 @@ function fill_db()
         tmp_data['count'] = 0;
         tmp_data['name'] = i;
         data[count] = tmp_data;
-        data['count'] = 0;
-        count++;
+        count += 2; // every even number is boy and odd is girl
     });
-
-    res['boys'] = data;
-    count = 0;
-    data = {};
-    
+    count = 1;
     girls_shuffled.forEach(i => {
         var tmp_data = {};
         girls_prof.forEach(j => {
@@ -73,13 +66,12 @@ function fill_db()
         tmp_data['count'] = 0;
         tmp_data['name'] = i;
         data[count] = tmp_data;
-        data['count'] = 0;
-        count++;
+        count += 2;
     });
-    res['girls'] = data;
+    data['count'] = 0;
 
     const qRef = ref(getDatabase());
-    set(qRef, res);
+    set(qRef, data);
 }
 
 function showLoader() {
@@ -102,7 +94,7 @@ async function showResult(profession)
 {
     showLoader();
 
-    var qRef = ref(getDatabase(), `${gender}/${index}`);
+    var qRef = ref(getDatabase(), ''+index);
     var snapshot = await get(qRef);
     var data = snapshot.val();
     data['count']++;
@@ -123,11 +115,11 @@ async function showResult(profession)
     }
     
     set(qRef, data);
-    qRef = ref(getDatabase(), gender + '/count');
+    qRef = ref(getDatabase(), '/count');
     snapshot = await get(qRef);
     data = snapshot.val();
-    hideLoader();
     set(qRef, data+1);
+    hideLoader();
 }
 
 // if there's no enough data, i want to give the professions with
@@ -143,7 +135,7 @@ function get4MinSaw()
     }
     for (let i of keys)
     {
-        const max = Math.max(Object.values(res));
+        const max = Math.max(...Object.values(res));
         if (data[i]['saw'] < max)
         {
             var max_name;
@@ -155,7 +147,7 @@ function get4MinSaw()
                     break;
                 }
             }
-            res.delete(max_name);
+            delete res[max_name];
             res[i] = data[i]['saw'];
         }
     }
@@ -175,7 +167,7 @@ function getTop4()
     }
     for (let i of keys)
     {
-        const min = Math.min(Object.values(res));
+        const min = Math.min(...Object.values(res));
         if (data[i]['result'] / data[i]['saw'] > min)
         {
             var min_name;
@@ -187,7 +179,7 @@ function getTop4()
                     break;
                 }
             }
-            res.delete(min_name);
+            delete res[min_name];
             res[i] = data[i]['clicked'] / data[i]['saw'];
         }
     }
@@ -198,12 +190,12 @@ async function nextName()
 {
     const index_of_index = Math.floor(Math.random() * indexes.length);
     index = indexes[index_of_index];
-    const qRef = ref(getDatabase(), gender + '/' + index);
+    const qRef = ref(getDatabase(), ''+index);
     indexes.splice(index_of_index, 1);
     if (!indexes.length)
     {
         count++;
-        const qRef = ref(getDatabase(), gender + '/' + (count+1) * 10);
+        const qRef = ref(getDatabase(), ''+(count+1) * 10);
         const snapshot = await get(qRef);
         const data = snapshot.val();
         if (!data)
@@ -233,10 +225,10 @@ async function nextName()
     hideLoader();
 }
 
-async function start(gender1)
+async function start()
 {
+    console.log(1)
     showLoader();
-    gender = gender1;
     document.querySelector('.start-container').classList.add('hidden');
     document.querySelector('.main-container').classList.remove('hidden');
     
