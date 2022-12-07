@@ -154,16 +154,14 @@ function get4MinSaw()
         const max = Math.max(...Object.values(res));
         if (data[i]['saw'] < max)
         {
-            var max_name;
             for (let j in res)
             {
-                if (res[j] === max) 
+                if (res[j] === max && !(i in res)) 
                 {
-                    max_name = j;
+                    delete res[j];
                     break;
                 }
             }
-            delete res[max_name];
             res[i] = data[i]['saw'];
         }
     }
@@ -189,7 +187,7 @@ function getTop4()
             var min_name;
             for (let j in res)
             {
-                if (res[j] === min) 
+                if (res[j] === min && !(i in res)) 
                 {
                     min_name = j;
                     break;
