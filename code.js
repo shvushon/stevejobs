@@ -111,7 +111,7 @@ async function showResult(profession)
     }
     for (var i = 0; i < 4; i++)
     {
-        document.getElementById((i+1).toString()).innerHTML += ' (' + (100 * clicked[i] / sum) + '%)';
+        document.getElementById((i+1).toString()).innerHTML += ' (' + (100 * clicked[i] / sum).toFixed(0) + '%)';
     }
     
     set(qRef, data);
